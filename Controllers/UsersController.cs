@@ -25,6 +25,7 @@ namespace Premia_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
+            // Retrieves all users from the database
             return await _context.Users.ToListAsync();
         }
 
@@ -32,6 +33,7 @@ namespace Premia_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
+            // Retrieves a specific user from the database based on the provided id
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -47,6 +49,7 @@ namespace Premia_API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
+            // Updates an existing user in the database based on the provided id
             if (id != user.Id)
             {
                 return BadRequest();
@@ -78,6 +81,7 @@ namespace Premia_API.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
+            // Creates a new user in the database
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -88,6 +92,7 @@ namespace Premia_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
+            // Deletes a user from the database based on the provided id
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
@@ -105,6 +110,7 @@ namespace Premia_API.Controllers
 
         private bool UserExists(int id)
         {
+            // Checks if a user with the provided id exists in the database
             return _context.Users.Any(e => e.Id == id);
         }
     }

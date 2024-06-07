@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Premia_API.Data;
 using Premia_API.Entities;
+using Premia_API.Services;
 
 namespace Premia_API.Controllers
 {
@@ -21,14 +22,31 @@ namespace Premia_API.Controllers
             _context = context;
         }
 
-        // GET: api/Documents
+        private readonly DocumentService _documentService;
+
+        public DocumentsController(DocumentService documentService)
+        {
+            _documentService = documentService;
+        }
+
+
+
+        /// <summary>
+        /// Retrieves all documents.
+        /// </summary>
+        /// <returns>A list of documents.</returns>
         [HttpGet]
+        
         public async Task<ActionResult<IEnumerable<Document>>> GetDocuments()
         {
             return await _context.Documents.ToListAsync();
         }
 
-        // GET: api/Documents/5
+        /// <summary>
+        /// Retrieves a specific document by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the document.</param>
+        /// <returns>The document with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Document>> GetDocument(int id)
         {
@@ -42,8 +60,12 @@ namespace Premia_API.Controllers
             return document;
         }
 
-        // PUT: api/Documents/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Updates a document.
+        /// </summary>
+        /// <param name="id">The ID of the document to update.</param>
+        /// <param name="document">The updated document.</param>
+        /// <returns>No content if the update is successful.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDocument(int id, Document document)
         {
@@ -73,8 +95,11 @@ namespace Premia_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Documents
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Creates a new document.
+        /// </summary>
+        /// <param name="document">The document to create.</param>
+        /// <returns>The created document.</returns>
         [HttpPost]
         public async Task<ActionResult<Document>> PostDocument(Document document)
         {
@@ -84,7 +109,11 @@ namespace Premia_API.Controllers
             return CreatedAtAction("GetDocument", new { id = document.DocumentID }, document);
         }
 
-        // DELETE: api/Documents/5
+        /// <summary>
+        /// Deletes a document.
+        /// </summary>
+        /// <param name="id">The ID of the document to delete.</param>
+        /// <returns>OK if the document is successfully deleted.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDocument(int id)
         {
@@ -103,14 +132,36 @@ namespace Premia_API.Controllers
             return Ok("Dokument usunięty");
         }
 
+        /// <summary>
+        /// Accepts a document.
+        /// </summary>
+        /// <param name="id">The ID of the document to accept.</param>
+        /// <returns>OK if the document is successfully accepted.</returns>
+        [HttpPost]
+        [Route("accept/{id}")]
+        public async Task<IActionResult> AcceptDocument(int id)
+        {
+            await _documentService.AcceptDocumentAsync(id);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Retrieves documents for a supervisor.
+        /// </summary>
+        /// <param name="id">The ID of the supervisor.</param>
+        /// <returns>A list of documents for the supervisor.</returns>
+        [HttpGet]
+        [Route("supervisor/{id}")]
+        public async Task<IActionResult> GetDocumentsForSupervisor(int id)
+        {
+            var documents = await _documentService.GetDocumentsForSupervisorAsync(id);
+            return Ok(documents);
+        }
+
         private bool DocumentExists(int id)
         {
             return _context.Documents.Any(e => e.DocumentID == id);
         }
-
-        
-
-
 
     }
 }
