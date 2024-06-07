@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Routing.Constraints;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
@@ -6,6 +8,8 @@ namespace Premia_API.Entities
 {
     public class Document
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DocumentID { get; set; }
         public string InvoiceNumber { get; set; }
         public int CustomerID { get; set; }

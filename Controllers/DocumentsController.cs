@@ -107,5 +107,10 @@ namespace Premia_API.Controllers
         {
             return _context.Documents.Any(e => e.DocumentID == id);
         }
+
+        
+
+
+
     }
 }

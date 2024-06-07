@@ -5,8 +5,17 @@ using Microsoft.OpenApi.Models;
 using Premia_API.Data;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using Serilog; 
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}")
+    .CreateLogger();
 
 // Add services to the container.
 
@@ -54,6 +63,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+// Error Handling
+app.UseSerilogRequestLogging();
+
+app.UseMiddleware<ExceptionMiddleware>(); 
 
 app.UseCors("UserPolicy");
 
