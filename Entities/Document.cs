@@ -18,7 +18,6 @@ namespace Premia_API.Entities
         public string CaseNumber { get; set; }
         public double Income { get; set; }
         public float TimeConsumed { get; set; }
-        public double Drive { get; set; }
         public int Month { get; set; }
         public string InvoiceStatus { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;

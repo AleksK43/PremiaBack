@@ -5,17 +5,8 @@ using Microsoft.OpenApi.Models;
 using Premia_API.Data;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
-using Serilog; 
 
 var builder = WebApplication.CreateBuilder(args);
-
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File(
-        path: "Logs/log-.txt",
-        rollingInterval: RollingInterval.Day,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}")
-    .CreateLogger();
 
 // Add services to the container.
 
@@ -34,7 +25,7 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddCors( options => options.AddPolicy(name: "UserPolicy", policy =>
+builder.Services.AddCors(options => options.AddPolicy(name: "UserPolicy", policy =>
 {
     policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
 }));
@@ -45,8 +36,8 @@ builder.Services.AddAuthentication(
     {
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true, 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSetting:Token").Value)),
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -63,10 +54,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-// Error Handling
-app.UseSerilogRequestLogging();
-
-app.UseMiddleware<ExceptionMiddleware>(); 
 
 app.UseCors("UserPolicy");
 
