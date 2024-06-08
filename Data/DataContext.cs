@@ -11,6 +11,8 @@ namespace Premia_API.Data
         public DbSet<Premia_API.Entities.Customer> Customer { get; set; }
         public DbSet<Entities.User> Users { get; set; }
         public DbSet<Entities.Document> Documents { get; set; }
+        public DbSet<Entities.CustomerUser> CustomerUsers { get; set; }
+        public DbSet<Entities.RegistrationRequest> RegistrationRequests { get; set; }
         public DbSet<Entities.BonusTask> BonusTasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

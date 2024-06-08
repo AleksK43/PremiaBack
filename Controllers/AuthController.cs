@@ -27,15 +27,13 @@ namespace Premia_API.Controllers
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
 
-        public AuthController(DataContext context)
+        public AuthController(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
-        public AuthController(IConfiguration congifuration)
-        {
-            _configuration = congifuration;
-        }
+
 
         /// <summary>
         /// Registers a new user.
@@ -53,12 +51,15 @@ namespace Premia_API.Controllers
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             user.Name = request.Name;
             user.LastName = request.LastName;
-            user.Department = request.Deprtment;
+            user.Department = request.Department;
             user.SupervisorId = request.SupervisorId;
             user.Email = request.Email;
 
             user.PasswordHash = passwordHash;
-            user.Username = string.Concat(request.Name, request.LastName);
+            user.Username = string.Concat(request.Name," ", request.LastName);
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
             return Ok(user);
         }
 
@@ -77,12 +78,12 @@ namespace Premia_API.Controllers
             }
             if (!BCrypt.Net.BCrypt.Verify(request.Password, existingUser.PasswordHash))
             {
-                return BadRequest("Invalid password");
+                return BadRequest("Invalid password or login");
             }
 
             string token = CreateToken(existingUser);
 
-            return Ok(token);
+            return Ok(new{token });
         }
 
         /// <summary>
