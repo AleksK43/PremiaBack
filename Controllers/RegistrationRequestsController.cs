@@ -32,7 +32,11 @@ namespace Premia_API.Controllers
         public async Task<ActionResult> AddRegistrationRequest(UserRegisterTaskDTO requestDTO)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(requestDTO.Password);
-
+            var existingRequest = await _context.RegistrationRequests.FirstOrDefaultAsync(r => r.Email == requestDTO.Email);
+            if (existingRequest != null)
+            {
+                return Conflict(new { message = "Email already exists." });
+            }
             var request = new RegistrationRequest
             {
                 Name = requestDTO.Name,
@@ -40,16 +44,17 @@ namespace Premia_API.Controllers
                 Department = requestDTO.Department,
                 SupervisorId = requestDTO.SupervisorId,
                 Email = requestDTO.Email,
-                PasswordHash = requestDTO.Password
+                PasswordHash = passwordHash
             };
+
 
             _context.RegistrationRequests.Add(request);
             await _context.SaveChangesAsync();
-            return Ok("Registration request added successfully.");
+            return Ok(new { message = "Registration request added successfully." });
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRegistrationRequest(int id, UserRegisterTaskDTO requestDTO)
+        public async Task<IActionResult> UpdateRegistrationRequest(int id)
         {
             var registrationRequest = await _context.RegistrationRequests.FindAsync(id);
 
@@ -65,20 +70,22 @@ namespace Premia_API.Controllers
                 // Save changes to mark the registration request as approved
                 await _context.SaveChangesAsync();
 
-                // Create a new user based on the registration request
+                // Create a new user based on the registration request and supervisor information
                 var newUser = new User
                 {
-                    Name = requestDTO.Name,
-                    LastName = requestDTO.LastName,
-                    Department = requestDTO.Department,
-                    SupervisorId = requestDTO.SupervisorId,
-                    Email = requestDTO.Email,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(requestDTO.Password) // Hash the password
+                    Name = registrationRequest.Name,
+                    LastName = registrationRequest.LastName,
+                    Username = string.Concat(registrationRequest.Name, " ", registrationRequest.LastName),
+                    Department = registrationRequest.Department,
+                    SupervisorId = registrationRequest.SupervisorId,
+                    Email = registrationRequest.Email,
+                    PasswordHash = registrationRequest.PasswordHash
                 };
 
                 // Add the new user to the context and save changes
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
+                return Ok(new { message = "Registration request approved successfully." });
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -94,6 +101,7 @@ namespace Premia_API.Controllers
 
             return NoContent();
         }
+
 
         private bool RegistrationRequestExists(int id)
         {
