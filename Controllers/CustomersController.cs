@@ -10,25 +10,40 @@ using Premia_API.Entities;
 
 namespace Premia_API.Controllers
 {
+    /**
+         * @class CustomersController
+         * @brief This class handles the API endpoints related to customers.
+         */
     [Route("api/[controller]")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
         private readonly DataContext _context;
 
+        /**
+         * @brief Initializes a new instance of the CustomersController class.
+         * @param context The DataContext object used for accessing the database.
+         */
         public CustomersController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: api/Customers
+        /**
+         * @brief Retrieves all customers from the database.
+         * @return A list of Customer objects.
+         */
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomer()
         {
             return await _context.Customer.ToListAsync();
         }
 
-        // GET: api/Customers/5
+        /**
+         * @brief Retrieves a specific customer from the database.
+         * @param id The ID of the customer to retrieve.
+         * @return The Customer object with the specified ID.
+         */
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
@@ -42,8 +57,12 @@ namespace Premia_API.Controllers
             return customer;
         }
 
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /**
+         * @brief Updates a specific customer in the database.
+         * @param id The ID of the customer to update.
+         * @param customer The updated Customer object.
+         * @return NoContent if the update is successful, BadRequest if the ID does not match the customer's ID, or NotFound if the customer does not exist.
+         */
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
@@ -73,8 +92,11 @@ namespace Premia_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Customers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /**
+         * @brief Creates a new customer in the database.
+         * @param customer The Customer object to create.
+         * @return The created Customer object.
+         */
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
@@ -84,7 +106,11 @@ namespace Premia_API.Controllers
             return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
         }
 
-        // DELETE: api/Customers/5
+        /**
+         * @brief Deletes a specific customer from the database.
+         * @param id The ID of the customer to delete.
+         * @return NoContent if the deletion is successful, or NotFound if the customer does not exist.
+         */
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
@@ -100,6 +126,11 @@ namespace Premia_API.Controllers
             return NoContent();
         }
 
+        /**
+         * @brief Checks if a customer with the specified ID exists in the database.
+         * @param id The ID of the customer to check.
+         * @return True if the customer exists, False otherwise.
+         */
         private bool CustomerExists(int id)
         {
             return _context.Customer.Any(e => e.Id == id);
